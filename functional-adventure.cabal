@@ -1,0 +1,81 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.6.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: bd0782ac49f5cd4d23ee0b3c27e2ae905e935ea51af31225e2e95e0aac708318
+
+name:           functional-adventure
+version:        0.1.0.0
+description:    functional-adventure
+build-type:     Simple
+extra-source-files:
+    README.md
+
+library
+  exposed-modules:
+      Command
+      Direction
+      Example
+      GameIO
+      GameState
+      Item
+      Main
+      Player
+      Room
+  other-modules:
+      Paths_functional_adventure
+  hs-source-dirs:
+      src
+  default-extensions:
+      InstanceSigs
+      NamedFieldPuns
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-unused-top-binds -Wno-unused-local-binds -Wno-unused-pattern-binds -Wno-unused-matches -Wno-missing-signatures -Wno-type-defaults -Wno-compat-unqualified-imports -Woverlapping-patterns
+  build-depends:
+      base
+    , containers
+    , mtl
+    , parsec
+    , random
+  default-language: Haskell2010
+
+executable functional-adventure-exe
+  main-is: Main.hs
+  hs-source-dirs:
+      app
+  default-extensions:
+      InstanceSigs
+      NamedFieldPuns
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-unused-top-binds -Wno-unused-local-binds -Wno-unused-pattern-binds -Wno-unused-matches -Wno-missing-signatures -Wno-type-defaults -Wno-compat-unqualified-imports -Woverlapping-patterns -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base
+    , containers
+    , functional-adventure
+    , mtl
+    , parsec
+    , random
+  default-language: Haskell2010
+
+test-suite functional-adventure-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_functional_adventure
+  hs-source-dirs:
+      test
+  default-extensions:
+      InstanceSigs
+      NamedFieldPuns
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wno-unused-top-binds -Wno-unused-local-binds -Wno-unused-pattern-binds -Wno-unused-matches -Wno-missing-signatures -Wno-type-defaults -Wno-compat-unqualified-imports -Woverlapping-patterns -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      QuickCheck
+    , base
+    , containers
+    , functional-adventure
+    , hspec
+    , hspec-discover
+    , mtl
+    , parsec
+    , random
+  default-language: Haskell2010

@@ -1,0 +1,176 @@
+#+Author: Matt Teichman
+#+Title: Final Project Grade: Kshithija Reddy Narra
+
+* Assignment Grade: 92%
+
+Lovely work!  Tons of fun to play and the code is excellent.  There is
+one bug; see below for instructions on fixing it.
+
+Thank you so much for taking the class.  It was wonderful having you
+and I think the other students learned a lot from your incisive
+commentary in class.  Stay in touch!
+
+* Grade Components:
+
+1. User Feel: 10/10
+   + Great!  Plays smoothly.
+   + Emojis look fantastic.
+   + I guess this is a matter of taste, but I would throw in an
+     additional space after the =>= in the prompt.
+   + I also think the text layout would look a little more uniform if
+     it didn't add a newline after the lists of objects and exits.
+   + First game anyone in this class has ever made featuring an
+     exitless room!  Awesome!
+   + Cheat command is a cool idea; I haven't seen many of those in
+     this class.
+2. Code Style: 10/10
+   + Looking good.
+   + You can simplify =main= to:
+     #+begin_src haskell
+       main :: IO ()
+       main = do
+	 evalStateT (opening >> forever repl) initialState
+     #+end_src
+   + In the version you have, you're running the game passing the
+     initial state in twice.  It doesn't make a difference, since
+     =opening= doesn't modify the game state, but if it were changed
+     to modify the game state, it's worth noting that passing the
+     initial game state in twice would "reset" it between the opening
+     and the first execution of =repl=.
+   + =teleport= works well, but I think a more natural home for it
+     would be the =GameState= module, since it all it does IO-wise is
+     print (so those strings could be messages in the game state).
+     + The way to think of it is: =GameState.hs= is for pure game
+       state transition functions, and =GameIO.hs= is for functions
+       that need to do IO while having access to the current game
+       state.
+     + You'd also be able to do validate the game moves monadically,
+       which would be a little cleaner than doing nested case
+       expressions.
+     + Granted, these case expressions are only uni-branching, so not
+       too bad.  Nonetheless, things could get crazy, were the logic
+       to turn into something a bit more complex.
+   + =GameIO= looking great in other respects.
+   + Great monadic error handling in =GameState.hs=!
+   + Nice work extending the logic to check for a game win to check
+     for level completion.
+   + Ooh, =checkUniverse= is a cool idea; I hadn't thought of defining
+     a predicate like that.
+   + =winState= doesn't need to be a constant function to the winning
+     state; it can just be the winning state, and then you can use
+     =put= to make that the current state:
+     #+begin_src haskell
+       winState :: GameState
+       winState = GameState Nothing gameMap univLevel2 (Player itemsToWin 150 Earth)
+
+       thanos :: GameIO ()
+       thanos = do
+	   gs <- get
+	   case checkUniverse gs of
+	       False -> lift (putStrLn "This command can only be used in level 2.")
+	       True -> put winState
+		       >> lift (putStrLn "You received all the infinity stones and are teleported to Earth as requested by Thanos 😈")
+     #+end_src
+   + Nice job managing the different level universes in =Item.hs=.
+   + You don't need to import =Data.List= qualified in =Player.hs=.
+     (Unless you want to!)
+   + =isCarryingAnything= doesn't need to be a conditional expression,
+     since it already evaluates to a boolean:
+     #+begin_src haskell
+       isCarryingAnything :: Player -> Bool
+       isCarryingAnything p = null (inventory p)
+     #+end_src
+3. Bug-Free Performance: 6/10
+   + Mostly works great, but there is a bug.
+   + There seems to be an infinite cycle when you get to Earth in
+     Level 2:
+     #+begin_example
+       ->west
+       You go west.
+       ->look
+       You are on Earth.
+       There are exits in the following directions:
+       south
+       north
+       west
+       east
+
+       ->west
+       You go west.
+       ->look
+       You are on Earth.
+       There are exits in the following directions:
+       south
+       north
+       west
+       east
+
+       ->west
+       You go west.
+       ->look
+       You are on Earth.
+       There are exits in the following directions:
+       south
+       north
+       west
+       east
+     #+end_example
+   + This is caused by the =earth= constant exiting westward into
+     itself.  I think the idea was to have it exit back into Xandar,
+     since Xandar exits eastward into Earth:
+     #+begin_example
+       There are exits in the following directions:
+       south
+       north
+       east
+
+       ->look
+       You are on Xandar.
+       You see the following objects:
+       darkhold
+       godslayer
+
+       There are exits in the following directions:
+       south
+       north
+       east
+
+       ->east
+       You go east.
+       ->west
+       You go west.
+       ->look
+       You are on Earth.
+       There are exits in the following directions:
+       south
+       north
+       west
+       east
+     #+end_example
+   + So this should fix it:
+     #+begin_src haskell
+       earth :: Room
+       earth = Room Earth "You are on Earth." [(S, Statesman), (N,Titan), (W, Xandar), (E, Knowhere)] []
+     #+end_src
+4. Required Minimal Features: 10/10
+   + Take/drop error messaging, check!
+   + Parsing working great!
+   + Weight limit, check!
+5. New Features: 10/10
+   + Error messaging around teleportation working great.
+     + I like the "you're in the wrong level" message for Level 1 and
+       the "you need the space stone" message for Level 2.
+   + Level transition worked perfectly.
+     + Inventory carried over from Level 1 to Level 2: nice!
+6. Documentation: 9/10
+   + README looks great.
+   + I like the breakdown of all the commands.
+   + Mission descriptions are clear.
+   + Would be helpful to have either a map of the two levels for
+     playthrough testing, or a verbal description of how to navigate
+     the two maps.
+   + Worth mentioning in the guide to playing through the game that
+     the quantum suit and gauntlet need to be brought back to Dyne
+     Laboratory.
+   + Also worth mentioning that you need to hold onto the quantum suit
+     and the gauntlet to win in Level 2.
